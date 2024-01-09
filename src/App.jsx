@@ -2,9 +2,10 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./frontend/pages/home/Home";
 import { useEffect } from "react";
 import Ecosystem from "./frontend/pages/ecosystem/Ecosystem";
-import Header from "./frontend/components/header/Header";
 import Footer from "./frontend/components/footer/Footer";
-import StakePION from "./frontend/pages/stakePION/StakePION";
+import StakePION from "./frontend/pages/pionApp/stakePION/StakePION";
+import AppLayout from "./frontend/components/appLayout/AppLayout";
+import WebLayout from "./frontend/components/webLayout/WebLayout";
 
 function App() {
   
@@ -30,11 +31,11 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Header/>
+      {/* <Header/> */}
         <Routes>
-          <Route path='/' element={<Home/>} />
-          <Route path='/ecosystem' element={<Ecosystem/>} />
-          <Route path='/launch' element={<StakePION/>} />
+          <Route path='/' element={<WebLayout Component={Home}/>} />
+          <Route path='/ecosystem' element={<WebLayout Component={Ecosystem}/>} />
+          <Route path='/launch' element={<AppLayout Component={StakePION}/>} />
         </Routes>
       <Footer/>
     </BrowserRouter>

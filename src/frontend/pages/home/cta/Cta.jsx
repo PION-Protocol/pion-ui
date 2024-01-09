@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import Champions from '../../../../assets/img/champions.png'
 
 const Cta = () => {

@@ -1,8 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Twitter from '../../../../assets/img/Group932.svg'
-import Git from '../../../../assets/img/Group933.svg'
-import Reddit from '../../../../assets/img/Group934.svg'
 import Globe from '../../../../assets/img/Vector_2648-ai.svg'
 import Stats from '../stats/Stats'
 // import Stats2 from '../stats/Stats2'
