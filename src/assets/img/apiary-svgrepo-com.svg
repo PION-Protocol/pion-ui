@@ -1,0 +1,22 @@
+<svg id="apiary-svgrepo-com" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="68.719" height="70" viewBox="0 0 68.719 70">
+  <defs>
+    <radialGradient id="radial-gradient" cx="0.5" cy="0.5" r="0.5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#444"/>
+      <stop offset="1" stop-color="#313131"/>
+    </radialGradient>
+    <linearGradient id="linear-gradient" x1="1" y1="0.5" x2="0" y2="0.5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ff9100"/>
+      <stop offset="1" stop-color="#804900"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.5" y1="0" x2="0.5" y2="1" xlink:href="#linear-gradient"/>
+  </defs>
+  <path id="Path_427" data-name="Path 427" d="M127.693,9.923V29.728l17.185-9.923V0L127.693,9.923Z" transform="translate(-93.323)" fill="#13a049" opacity="0.5"/>
+  <path id="Path_428" data-name="Path 428" d="M81.032,9.923,63.847,0V19.846l17.185,9.923V9.923Z" transform="translate(-46.662)" fill="#a2cc39" opacity="0.5"/>
+  <path id="Path_429" data-name="Path 429" d="M51.555,0,34.37,9.923,17.185,0,0,9.923,34.37,29.769,68.719,9.923,51.555,0Z" opacity="0.9" fill="url(#radial-gradient)"/>
+  <path id="Path_430" data-name="Path 430" d="M34.37,56.886,0,36.867V56.886L17.185,66.9v20L34.37,96.9,51.555,86.893v-20L68.719,56.886V36.867L34.37,56.886Z" transform="translate(0 -26.944)" fill="url(#linear-gradient)"/>
+  <path id="Path_431" data-name="Path 431" d="M127.693,56.886V96.9l17.185-10.009v-20l17.164-10.009V36.867L127.693,56.886Z" transform="translate(-93.323 -26.944)" fill="url(#radial-gradient)"/>
+  <path id="Path_432" data-name="Path 432" d="M127.693,184.259v19.846l17.185-9.923-17.185-9.923Z" transform="translate(-93.323 -134.146)" fill="url(#linear-gradient-2)"/>
+  <path id="Path_433" data-name="Path 433" d="M81.032,204.258V184.412l-17.185,9.923,17.185,9.923Z" transform="translate(-46.662 -134.258)" fill="#231f20" opacity="0.1"/>
+  <path id="Path_434" data-name="Path 434" d="M17.185,73.734,0,83.657,17.185,93.58,34.37,83.657,17.185,73.734Z" transform="translate(0 -53.681)" fill="url(#linear-gradient-2)"/>
+  <path id="Path_435" data-name="Path 435" d="M144.878,73.734l-17.185,9.923,17.185,9.923,17.164-9.923-17.164-9.923Z" transform="translate(-93.323 -53.681)" fill="url(#linear-gradient-2)"/>
+</svg>
