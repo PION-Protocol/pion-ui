@@ -6,6 +6,7 @@ import Footer from "./frontend/components/footer/Footer";
 import StakePION from "./frontend/pages/pionApp/stakePION/StakePION";
 import AppLayout from "./frontend/components/appLayout/AppLayout";
 import WebLayout from "./frontend/components/webLayout/WebLayout";
+import YourAccount from "./frontend/pages/yourAccount/YourAccount";
 
 function App() {
   
@@ -36,6 +37,7 @@ function App() {
           <Route path='/' element={<WebLayout Component={Home}/>} />
           <Route path='/ecosystem' element={<WebLayout Component={Ecosystem}/>} />
           <Route path='/launch' element={<AppLayout Component={StakePION}/>} />
+          <Route path='/account' element={<AppLayout Component={YourAccount}/>} />
         </Routes>
       <Footer/>
     </BrowserRouter>
