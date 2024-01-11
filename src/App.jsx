@@ -1,6 +1,25 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./frontend/pages/home/Home";
 import { useEffect } from "react";
+
+import '@rainbow-me/rainbowkit/styles.css';
+import {
+  getDefaultWallets,
+  RainbowKitProvider,
+  darkTheme,
+} from '@rainbow-me/rainbowkit';
+import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import {
+  mainnet,
+  polygon,
+  optimism,
+  arbitrum,
+  base,
+  zora,
+} from 'wagmi/chains';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { publicProvider } from 'wagmi/providers/public';
+
 import Ecosystem from "./frontend/pages/ecosystem/Ecosystem";
 import Footer from "./frontend/components/footer/Footer";
 import StakePION from "./frontend/pages/pionApp/stakePION/StakePION";
@@ -9,6 +28,24 @@ import WebLayout from "./frontend/components/webLayout/WebLayout";
 import YourAccount from "./frontend/pages/yourAccount/YourAccount";
 
 function App() {
+  const { chains, publicClient } = configureChains(
+    [mainnet, polygon, optimism, arbitrum, base, zora],
+    [
+      alchemyProvider({ apiKey: process.env.ALCHEMY_ID || '' }),
+      publicProvider()
+    ]
+  );
+  const { connectors } = getDefaultWallets({
+    appName: 'Pion',
+    projectId: process.env.REACT_APP_PROJECT_ID || '',
+    chains
+  });
+  
+  const wagmiConfig = createConfig({
+    autoConnect: true,
+    connectors,
+    publicClient
+  });
   
   useEffect(() => {
     const handleScroll = () => {
@@ -31,16 +68,27 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      {/* <Header/> */}
-        <Routes>
-          <Route path='/' element={<WebLayout Component={Home}/>} />
-          <Route path='/ecosystem' element={<WebLayout Component={Ecosystem}/>} />
-          <Route path='/launch' element={<AppLayout Component={StakePION}/>} />
-          <Route path='/account' element={<AppLayout Component={YourAccount}/>} />
-        </Routes>
-      <Footer/>
-    </BrowserRouter>
+    <WagmiConfig config={wagmiConfig}>
+      <RainbowKitProvider chains={chains}
+        theme={darkTheme({
+          accentColor: '#4b5563',
+          accentColorForeground: 'white',
+          borderRadius: 'small',
+          fontStack: 'system',
+          overlayBlur: 'small',
+      })}>
+        <BrowserRouter>
+          {/* <Header/> */}
+            <Routes>
+              <Route path='/' element={<WebLayout Component={Home}/>} />
+              <Route path='/ecosystem' element={<WebLayout Component={Ecosystem}/>} />
+              <Route path='/launch' element={<AppLayout Component={StakePION}/>} />
+              <Route path='/account' element={<AppLayout Component={YourAccount}/>} />
+            </Routes>
+          <Footer/>
+        </BrowserRouter>
+      </RainbowKitProvider>
+    </WagmiConfig>
   );
 }
 

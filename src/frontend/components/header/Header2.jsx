@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Logo from '../../../assets/img/logo/png/colorLogoNoBackground.png';
 import { CgMenuRight } from "react-icons/cg";
 
@@ -11,7 +12,9 @@ const Header2 = () => {
       </Link>
       <div className="flex items-center lg:gap-12 gap-4 max-lg:ml-auto lg:grow">
         <div className='ml-auto'>
-          <Link to="/" className='lg:py-3 py-2 lg:px-5 px-3 bg-gradient-to-br from-gray-700 via-gray-700 to-gray-900 rounded-lg text-sm lg:text-base shadow-md text-white ring-2 ring-inset ring-transparent md:hover:-translate-y-1 block duration-300'>Connect Wallet</Link>
+          {/* <div className='lg:py-3 py-2 lg:px-5 px-3 bg-gradient-to-br from-gray-700 via-gray-700 to-gray-900 rounded-lg text-sm lg:text-base shadow-md text-white ring-2 ring-inset ring-transparent md:hover:-translate-y-1 block duration-300'> */}
+            <ConnectButton />
+          {/* </div> */}
         </div>
         <div className='lg:hidden block'>
           <Link className='text-white'><CgMenuRight className='size-8' /></Link>
@@ -21,4 +24,4 @@ const Header2 = () => {
   )
 }
 
-export default Header2
+export default Header2;
