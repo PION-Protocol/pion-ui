@@ -5,6 +5,11 @@
 				"internalType": "address",
 				"name": "pionTokenAddress",
 				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "adminAddress",
+				"type": "address"
 			}
 		],
 		"stateMutability": "nonpayable",

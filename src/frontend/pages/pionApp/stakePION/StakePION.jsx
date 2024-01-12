@@ -1,6 +1,8 @@
+/* global BigInt */
 import React, { useEffect, useState } from 'react'
-import { useAccount, useContractWrite  } from 'wagmi'
+import { useAccount, useContractWrite } from 'wagmi'
 import abi from "../../../../contracts/liquidity_abi.json"
+import pionTokenAbi from "../../../../contracts/pion_token_abi.json"
 
 const StakePION = () => {
     const [stakedTokenValue, setStakedTokenValue] = useState(0);
@@ -12,6 +14,26 @@ const StakePION = () => {
         setWalletAddress(account.address);
     }, [account]);
 
+    // First step is add the ABI similar to the one below.
+
+
+    const approvePION = async () => {
+        if (walletAddress === "") {
+            // TODO: Throw an alert to user to connect his wallet.
+        };
+        const { data, write } = useContractWrite({
+        address: process.env.REACT_APP_PION_TOKEN_CONTRACT_ADDRESS,
+        abi: pionTokenAbi,
+        functionName: 'approve',
+        });
+        write({
+            args: [process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
+                BigInt(10000000000000000000000000000000000000)],
+            from: "0x8648d3351a06B03e039Cd0818379F1717BCDd6B2"
+        })
+        console.log("Approved!")
+    }
+
     const { data, write } =useContractWrite({
         address: process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
         abi: abi,
@@ -19,12 +41,13 @@ const StakePION = () => {
     });
 
     const stakePION = async () => {
+        approvePION();
         if (walletAddress === "") {
             // TODO: Throw an alert to user to connect his wallet.
         };
         write({
             args: [stakedTokenValue],
-            from: {walletAddress},
+            from: walletAddress,
         })
     }
 
