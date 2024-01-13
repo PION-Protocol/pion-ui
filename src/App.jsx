@@ -27,6 +27,7 @@ import StakePION from "./frontend/pages/pionApp/stakePION/StakePION";
 import AppLayout from "./frontend/components/appLayout/AppLayout";
 import WebLayout from "./frontend/components/webLayout/WebLayout";
 import YourAccount from "./frontend/pages/yourAccount/YourAccount";
+import WithdrawPION from "./frontend/pages/pionApp/WithdrawPION";
 
 function App() {
   const { chains, publicClient } = configureChains(
@@ -85,6 +86,7 @@ function App() {
               <Route path='/ecosystem' element={<WebLayout Component={Ecosystem}/>} />
               <Route path='/launch' element={<AppLayout Component={StakePION}/>} />
               <Route path='/account' element={<AppLayout Component={YourAccount}/>} />
+              <Route path='/withdraw' element={<AppLayout Component={WithdrawPION}/>} />
             </Routes>
           <Footer/>
         </BrowserRouter>

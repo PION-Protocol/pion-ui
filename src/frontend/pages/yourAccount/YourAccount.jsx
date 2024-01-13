@@ -1,35 +1,78 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+/* global BigInt */
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useAccount, useContractReads } from 'wagmi';
+
+import liquidity_abi from "../../../contracts/liquidity_abi.json"
 
 const YourAccount = () => {
+    const account = useAccount();
+    const [balanceAmount, setBalanceAmount] = useState(null);
+    const [transferAmount, setTransferAmount] = useState(null);
+    const [percentageOwned, setPercentageOwned] = useState(null);
+    const config = {
+        address: process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
+        abi: liquidity_abi
+    };
+    const { data:amountBySupplier } = useContractReads({
+        contracts: [{
+            ...config,
+            functionName: 'getAmountBySupplier',
+            args: [account?.address],
+        }, {
+            ...config,
+            functionName: 'totalTokensSupplied'
+        }]
+    });
+
+    useEffect(() => {
+        if (amountBySupplier) {
+            console.dir(amountBySupplier, { depth: null });
+            const percentage = Number(BigInt(amountBySupplier[0]?.result?.balanceAmount) / BigInt(amountBySupplier[1]?.result)) * 100;
+            setBalanceAmount(amountBySupplier[0].result?.balanceAmount);
+            setTransferAmount(amountBySupplier[0].result?.transferAmount);
+            setPercentageOwned(percentage);
+        }
+    }, [amountBySupplier]);
+
   return (
     <div className="w-full flex bg-gradient-to-tr from-gray-800 via-zinc-800 to-zinc-700 pb-10 md:pb-20 select-none lg:pt-32 pt-24 md:pt-28 min-h-[600px] z-10 relative">
         <div className='flex flex-col relative z-10 2xl:max-w-7xl xl:max-w-6xl lg:max-w-5xl lg:px-0 px-8 mx-auto w-full py-5 max-lg:flex-wrap'>
             <div className="flex justify-between items-center pb-8 mb-8 border-b-2 border-white/10">
                 <div className="grow font-bold xl:text-3xl lg:text-2xl md:text-xl text-lg text-balance text-white">Your Account</div>
                 <div className="inline-flex items-center gap-3">
-                    <Link to="/" className='lg:py-3 py-2 lg:px-5 px-3 bg-transparent rounded-lg text-sm lg:text-base shadow-md text-white/60 ring-2 ring-inset ring-white/50 md:hover:-translate-y-1 inline-flex items-center gap-2 duration-300'>Withdraw <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeiinejoin="round" className='size-4' xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path></svg></Link>
-                    <Link to="/" className='lg:py-3 py-2 lg:px-5 px-3 bg-gradient-to-br from-gray-900 via-gray-900 to-zinc-900 rounded-lg text-sm lg:text-base shadow-md text-white ring-2 ring-inset ring-zinc-900 md:hover:-translate-y-1 inline-flex items-center gap-2 duration-300'>Deposit <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeiinejoin="round" className='size-4' xmlns="http://www.w3.org/2000/svg"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></Link>
+                    <Link
+                        to="/withdraw"
+                        className='lg:py-3 py-2 lg:px-5 px-3 bg-transparent rounded-lg text-sm lg:text-base shadow-md text-white/60 ring-2 ring-inset ring-white/50 md:hover:-translate-y-1 inline-flex items-center gap-2 duration-300'
+                    >
+                        Withdraw
+                        <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeiinejoin="round" className='size-4' xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path></svg>
+                    </Link>
+                    <Link to="/launch" className='lg:py-3 py-2 lg:px-5 px-3 bg-gradient-to-br from-gray-900 via-gray-900 to-zinc-900 rounded-lg text-sm lg:text-base shadow-md text-white ring-2 ring-inset ring-zinc-900 md:hover:-translate-y-1 inline-flex items-center gap-2 duration-300'>
+                        Deposit
+                    <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeiinejoin="round" className='size-4' xmlns="http://www.w3.org/2000/svg">
+                    <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </Link>
                 </div>
             </div>
             <div className="grid md:grid-cols-2 md:gap-8 gap-5 pb-8">
                 <div className="flex flex-col gap-4 rounded-2xl md:p-10 p-5 border-2 border-white/10 bg-white/5 *:flex *:items-center *:border-b-2 *:border-white/10 *:pb-4">
                     <div className='last:pb-0 last:border-b-0'>
-                        <div className="grow md:text-lg text-base text-white/70">Staked Amount (in PION)</div>
-                        <div className="grow-0 md:text-2xl text-xl text-white">1000</div>
+                        <div className="grow md:text-lg text-base text-white/70">Staked Amount</div>
+                        <div className="grow-0 md:text-2xl text-xl text-white">{`${balanceAmount}`}</div>
                     </div>
                     <div className='last:pb-0 last:border-b-0'>
                         <div className="grow md:text-lg text-base text-white/70">Percentage of Pool</div>
-                        <div className="grow-0 md:text-2xl text-xl text-white">0.5</div>
+                        <div className="grow-0 md:text-2xl text-xl text-white">{percentageOwned}</div>
                     </div>
                 </div>
                 <div className="flex flex-col gap-4 rounded-2xl md:p-10 p-5 border-2 border-white/10 bg-white/5 *:flex *:items-center *:border-b-2 *:border-white/10 *:pb-4">
                     <div className='last:pb-0 last:border-b-0'>
-                        <div className="grow md:text-lg text-base text-white/70">Rewards (This week)</div>
-                        <div className="grow-0 md:text-2xl text-xl text-white">1000 USDT</div>
+                        <div className="grow md:text-lg text-base text-white/70">PIONs in queue</div>
+                        <div className="grow-0 md:text-2xl text-xl text-white">{`${transferAmount}`}</div>
                     </div>
                     <div className='last:pb-0 last:border-b-0'>
-                        <div className="grow md:text-lg text-base text-white/70">Total Rewards</div>
+                        <div className="grow md:text-lg text-base text-white/70">Current PION balance</div>
                         <div className="grow-0 md:text-2xl text-xl text-white">2000 USDT</div>
                     </div>
                 </div>
