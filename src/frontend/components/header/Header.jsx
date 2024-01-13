@@ -21,7 +21,9 @@ const Header = () => {
           <Link to="/" className='md:hover:text-gray-400'>Community</Link>
         </div>
         <div>
-          <Link to="/launch" className='lg:py-3 py-2 lg:px-5 px-3 bg-gradient-to-br from-gray-700 via-gray-700 to-gray-900 rounded-lg text-sm lg:text-base shadow-md text-white ring-2 ring-inset ring-transparent md:hover:-translate-y-1 block duration-300'>Launch App</Link>
+          <Link to="/account" className='lg:py-3 py-2 lg:px-5 px-3 bg-gradient-to-br from-gray-700 via-gray-700 to-gray-900 rounded-lg text-sm lg:text-base shadow-md text-white ring-2 ring-inset ring-transparent md:hover:-translate-y-1 block duration-300'>
+            Launch App
+          </Link>
         </div>
         <div className='lg:hidden block'>
           <Link className='text-white'><CgMenuRight className='size-8' /></Link>
