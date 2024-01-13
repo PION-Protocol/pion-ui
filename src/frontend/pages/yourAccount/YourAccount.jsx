@@ -4,12 +4,13 @@ import { Link } from 'react-router-dom';
 import { useAccount, useContractReads } from 'wagmi';
 
 import liquidity_abi from "../../../contracts/liquidity_abi.json"
+import isEmpty from 'lodash.isempty';
 
 const YourAccount = () => {
     const account = useAccount();
-    const [balanceAmount, setBalanceAmount] = useState(null);
-    const [transferAmount, setTransferAmount] = useState(null);
-    const [percentageOwned, setPercentageOwned] = useState(null);
+    const [balanceAmount, setBalanceAmount] = useState(0);
+    const [transferAmount, setTransferAmount] = useState(0);
+    const [percentageOwned, setPercentageOwned] = useState(0);
     const config = {
         address: process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
         abi: liquidity_abi
@@ -26,14 +27,21 @@ const YourAccount = () => {
     });
 
     useEffect(() => {
-        if (amountBySupplier) {
-            console.dir(amountBySupplier, { depth: null });
-            const percentage = Number(BigInt(amountBySupplier[0]?.result?.balanceAmount) / BigInt(amountBySupplier[1]?.result)) * 100;
-            setBalanceAmount(amountBySupplier[0].result?.balanceAmount);
-            setTransferAmount(amountBySupplier[0].result?.transferAmount);
-            setPercentageOwned(percentage);
+        if (isEmpty(account.address) === false) {
+            if (amountBySupplier) {
+                console.dir(amountBySupplier, { depth: null });
+                // TODO: Fix the null problem
+                const percentage = Number(BigInt(amountBySupplier[0]?.result?.balanceAmount) / BigInt(amountBySupplier[1]?.result)) * 100;
+                setBalanceAmount(amountBySupplier[0].result?.balanceAmount);
+                setTransferAmount(amountBySupplier[0].result?.transferAmount);
+                setPercentageOwned(percentage);
+            }
+        } else {
+            setBalanceAmount(0);
+            setTransferAmount(0);
+            setPercentageOwned(0);
         }
-    }, [amountBySupplier]);
+    }, [amountBySupplier, account?.address]);
 
   return (
     <div className="w-full flex bg-gradient-to-tr from-gray-800 via-zinc-800 to-zinc-700 pb-10 md:pb-20 select-none lg:pt-32 pt-24 md:pt-28 min-h-[600px] z-10 relative">

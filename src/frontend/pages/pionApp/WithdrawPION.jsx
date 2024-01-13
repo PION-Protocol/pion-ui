@@ -12,7 +12,9 @@ const WithdrawPION = () => {
     const {
         data: withdrawalData,
         isSuccess: isWithdrawSuccessful,
-        write: withdrawalWrite
+        write: withdrawalWrite,
+        isError: isWithdrawError,
+        error: withdrawalError,
     } = useContractWrite({
         address: process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
         abi: abi,
@@ -35,6 +37,15 @@ const WithdrawPION = () => {
             )
         }
     }, [isWithdrawSuccessful, withdrawalData]);
+
+    useEffect(() => {
+        if (isWithdrawError) {
+            if (withdrawalError.shortMessage)
+                toast.error(`Withdrawal failed. ${withdrawalError.shortMessage}`);
+            else
+                toast.error(`Withdrawal failed. ${withdrawalError.message}`);
+        }
+    }, [isWithdrawError, withdrawalError]);
 
     useEffect(() => {
         if (!isEmpty(account)) {

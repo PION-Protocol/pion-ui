@@ -1,18 +1,22 @@
 /* global BigInt */
-import React, { useEffect, useState } from 'react'
-import { useAccount, useContractWrite } from 'wagmi'
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAccount, useContractWrite } from 'wagmi';
 import isEmpty from 'lodash.isempty';
-import liquidity_abi from "../../../../contracts/liquidity_abi.json"
-import pionTokenAbi from "../../../../contracts/pion_token_abi.json"
+import liquidity_abi from "../../../../contracts/liquidity_abi.json";
+import pionTokenAbi from "../../../../contracts/pion_token_abi.json";
 import toast, { Toaster } from 'react-hot-toast';
 
 const StakePION = () => {
     const [stakedTokenValue, setStakedTokenValue] = useState(0);
     const [walletAddress, setWalletAddress] = useState(undefined);
     const account = useAccount();
+    const navigate = useNavigate();
 
     const {
         isSuccess: approvalSuccess,
+        isError: isApprovalError,
+        error: approvalError,
         write: approvalWrite,
     } = useContractWrite({
         address: process.env.REACT_APP_PION_TOKEN_CONTRACT_ADDRESS,
@@ -23,6 +27,8 @@ const StakePION = () => {
     const {
         data: supplyData,
         isSuccess: isSupplySuccessful,
+        isError: isSupplyError,
+        error: supplyError,
         write: supplyWrite
     } = useContractWrite({
         address: process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
@@ -33,19 +39,47 @@ const StakePION = () => {
     useEffect(() => {
         if (isSupplySuccessful) {
             toast.success("Staking successful!");
-            toast.success(<span>Verify your transaction on {' '} 
-                <a
-                    href={`${process.env.REACT_APP_POLYGONSCAN_URL}/tx/${supplyData.hash}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    class="text-blue-500 hover:text-blue-800"
-                >
-                    {`${process.env.REACT_APP_POLYGONSCAN_URL}/tx/${supplyData.hash}`}
-                </a>
-                </span>
+            toast.custom(
+                <div class="bg-white p-4 rounded-lg shadow-md flex align-items-center">
+                    <span>Verify your transaction on {' '} <br />
+                    <a
+                        href={`${process.env.REACT_APP_POLYGONSCAN_URL}/tx/${supplyData.hash}}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        class="text-blue-500 hover:text-blue-800"
+                    >
+                        {`${process.env.REACT_APP_POLYGONSCAN_URL}/tx/${supplyData.hash}}`}
+                    </a>
+                    </span>
+                </div>
             )
+            setTimeout(() => {
+                navigate('/account');
+            }, 5000);
         }
     }, [isSupplySuccessful, supplyData]);
+
+    useEffect(() => {
+        if (isSupplyError) {
+            console.log("Supply error occured");
+            console.dir(supplyError, { depth: null });
+            if (supplyError?.shortMessage)
+                toast.error(`There was an error in the supply.\n ${supplyError.shortMessage}`);
+            else
+                toast.error(`There was an error in the supply.\n ${supplyError.message}`);
+        }
+    }, [isSupplyError, supplyError]);
+
+    useEffect(() => {
+        if (isApprovalError) {
+            console.log("Approval error occured");
+            console.dir(approvalError, { depth: null });
+            if (approvalError?.shortMessage)
+                toast.error(`There was an error in the approval. ${approvalError.shortMessage}`);
+            else
+                toast.error(`There was an error in the approval. ${approvalError.message}`);
+        }
+    }, [isApprovalError, approvalError]);
 
     useEffect(() => {
         if (!isEmpty(account)) {
@@ -63,7 +97,7 @@ const StakePION = () => {
         }
     }, [approvalSuccess, walletAddress, stakedTokenValue]);
 
-    const approvePION = async () => {
+    const approvePION = () => {
         if (isEmpty(walletAddress) || walletAddress === undefined) {
             toast.error("Please connect your wallet");
         }
