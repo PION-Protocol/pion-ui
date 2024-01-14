@@ -91,7 +91,7 @@ const StakePION = () => {
         if (approvalSuccess) {
             toast.success("Contract is approved");
             supplyWrite({
-                args: [stakedTokenValue],
+                args: [stakedTokenValue * process.env.REACT_APP_TOKEN_DECIMAL],
                 from: walletAddress,
             });
         }

@@ -13,6 +13,7 @@ const YourAccount = () => {
     const [balanceAmount, setBalanceAmount] = useState(0);
     const [transferAmount, setTransferAmount] = useState(0);
     const [percentageOwned, setPercentageOwned] = useState(0);
+    const [totalTokensSupplied, setTotalTokensSupplied] = useState(0);
     const [logs, setLogs] = useState([]);
     
     const config = {
@@ -34,11 +35,15 @@ const YourAccount = () => {
         if (isEmpty(account.address) === false) {
             if (amountBySupplier) {
                 console.dir(amountBySupplier, { depth: null });
-                // TODO: Fix the null problem
+                const tokenDecimal = BigNumber(process.env.REACT_APP_TOKEN_DECIMAL);
                 const percentage = BigNumber(amountBySupplier[0]?.result?.balanceAmount).div(amountBySupplier[1]?.result).times(100);
-                setBalanceAmount(amountBySupplier[0].result?.balanceAmount);
-                setTransferAmount(amountBySupplier[0].result?.transferAmount);
+                const balanceAmount = BigNumber(amountBySupplier[0]?.result?.balanceAmount).dividedBy(tokenDecimal);
+                const totalTokensSupplied = BigNumber(amountBySupplier[1]?.result).dividedBy(tokenDecimal);
+                const transferAmount = BigNumber(amountBySupplier[0]?.result?.transferAmount).dividedBy(tokenDecimal);
+                setBalanceAmount(balanceAmount);
+                setTransferAmount(transferAmount);
                 setPercentageOwned(percentage);
+                setTotalTokensSupplied(totalTokensSupplied);
             }
         } else {
             setBalanceAmount(0);
@@ -113,8 +118,8 @@ const YourAccount = () => {
                         <div className="grow-0 md:text-2xl text-xl text-white">{`${transferAmount}`}</div>
                     </div>
                     <div className='last:pb-0 last:border-b-0'>
-                        <div className="grow md:text-lg text-base text-white/70">Current PION balance</div>
-                        <div className="grow-0 md:text-2xl text-xl text-white">2000 USDT</div>
+                        <div className="grow md:text-lg text-base text-white/70">Total PION locked</div>
+                        <div className="grow-0 md:text-2xl text-xl text-white">{`${totalTokensSupplied}`}</div>
                     </div>
                 </div>
             </div>

@@ -62,7 +62,7 @@ const WithdrawPION = () => {
         }
         else {
             withdrawalWrite({
-                args: [withdrawalAmount],
+                args: [withdrawalAmount * process.env.REACT_APP_TOKEN_DECIMAL],
                 from: walletAddress,
             });
         }
