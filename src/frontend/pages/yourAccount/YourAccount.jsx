@@ -23,7 +23,7 @@ const YourAccount = () => {
         contracts: [{
             ...config,
             functionName: 'getAmountBySupplier',
-            args: ["0x8648d3351a06B03e039Cd0818379F1717BCDd6B2"],
+            args: [account?.address],
         }, {
             ...config,
             functionName: 'totalTokensSupplied'
