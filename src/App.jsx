@@ -1,37 +1,32 @@
+import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./frontend/pages/home/Home";
-import { useEffect } from "react";
 
-import '@rainbow-me/rainbowkit/styles.css';
 import {
-  getDefaultWallets,
   RainbowKitProvider,
   darkTheme,
+  getDefaultWallets,
 } from '@rainbow-me/rainbowkit';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import '@rainbow-me/rainbowkit/styles.css';
+import { WagmiConfig, configureChains, createConfig } from 'wagmi';
 import {
-  mainnet,
   polygon,
-  optimism,
-  arbitrum,
-  base,
-  zora,
-  polygonMumbai,
+  polygonMumbai
 } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 
-import Ecosystem from "./frontend/pages/ecosystem/Ecosystem";
-import Footer from "./frontend/components/footer/Footer";
-import StakePION from "./frontend/pages/pionApp/stakePION/StakePION";
 import AppLayout from "./frontend/components/appLayout/AppLayout";
+import Footer from "./frontend/components/footer/Footer";
 import WebLayout from "./frontend/components/webLayout/WebLayout";
-import YourAccount from "./frontend/pages/yourAccount/YourAccount";
+import Ecosystem from "./frontend/pages/ecosystem/Ecosystem";
 import WithdrawPION from "./frontend/pages/pionApp/WithdrawPION";
+import StakePION from "./frontend/pages/pionApp/stakePION/StakePION";
+import YourAccount from "./frontend/pages/yourAccount/YourAccount";
 
 function App() {
   const { chains, publicClient } = configureChains(
-    [mainnet, polygon, polygonMumbai, optimism, arbitrum, base, zora],
+    [polygonMumbai, polygon],
     [
       alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_ID || '' }),
       publicProvider()
@@ -71,7 +66,7 @@ function App() {
 
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}
+      <RainbowKitProvider chains={chains} initialChain={polygonMumbai}
         theme={darkTheme({
           accentColor: '#4b5563',
           accentColorForeground: 'white',
