@@ -1,6 +1,6 @@
 import { getPublicClient } from '@wagmi/core';
 import BigNumber from 'bignumber.js';
-import { isEmpty, sortBy } from 'lodash';
+import { orderBy } from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -8,8 +8,9 @@ import { deserialize, useAccount, useContractReads } from 'wagmi';
 import liquidity_abi from "../../../contracts/liquidity_abi.json";
 
 const YourAccount = () => {
+    const TOKEN_DECIMAL = BigNumber(process.env.REACT_APP_TOKEN_DECIMAL);
     const publicClient = getPublicClient();
-    const account = useAccount();
+    const {address: userWalletAddress} = useAccount();
     const [balanceAmount, setBalanceAmount] = useState(0);
     const [transferAmount, setTransferAmount] = useState(0);
     const [percentageOwned, setPercentageOwned] = useState(0);
@@ -20,11 +21,11 @@ const YourAccount = () => {
         address: process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
         abi: liquidity_abi
     };
-    const { data:amountBySupplier } = useContractReads({
+    const { data: liquidityPool } = useContractReads({
         contracts: [{
             ...config,
             functionName: 'getAmountBySupplier',
-            args: [account?.address],
+            args: [userWalletAddress],
         }, {
             ...config,
             functionName: 'totalTokensSupplied'
@@ -32,14 +33,13 @@ const YourAccount = () => {
     });
 
     useEffect(() => {
-        if (isEmpty(account.address) === false) {
-            if (amountBySupplier) {
-                console.dir(amountBySupplier, { depth: null });
-                const tokenDecimal = BigNumber(process.env.REACT_APP_TOKEN_DECIMAL);
-                const percentage = BigNumber(amountBySupplier[0]?.result?.balanceAmount).div(amountBySupplier[1]?.result).times(100);
-                const balanceAmount = BigNumber(amountBySupplier[0]?.result?.balanceAmount).dividedBy(tokenDecimal);
-                const totalTokensSupplied = BigNumber(amountBySupplier[1]?.result).dividedBy(tokenDecimal);
-                const transferAmount = BigNumber(amountBySupplier[0]?.result?.transferAmount).dividedBy(tokenDecimal);
+        if (userWalletAddress) {
+            if (liquidityPool) {
+                console.dir(liquidityPool, { depth: null });
+                const percentage = BigNumber(liquidityPool[0]?.result?.balanceAmount).div(liquidityPool[1]?.result).times(100);
+                const balanceAmount = BigNumber(liquidityPool[0]?.result?.balanceAmount).dividedBy(TOKEN_DECIMAL);
+                const totalTokensSupplied = BigNumber(liquidityPool[1]?.result).dividedBy(TOKEN_DECIMAL);
+                const transferAmount = BigNumber(liquidityPool[0]?.result?.transferAmount).dividedBy(TOKEN_DECIMAL);
                 setBalanceAmount(balanceAmount);
                 setTransferAmount(transferAmount);
                 setPercentageOwned(percentage);
@@ -50,7 +50,7 @@ const YourAccount = () => {
             setTransferAmount(0);
             setPercentageOwned(0);
         }
-    }, [amountBySupplier, account?.address]);
+    }, [liquidityPool, userWalletAddress]);
 
     useEffect(() => {
         async function getLogs() {
@@ -58,7 +58,7 @@ const YourAccount = () => {
                             ...config,
                             eventName: "SupplyRequest",
                             args: {
-                                supplier: account?.address,
+                                supplier: userWalletAddress,
                             },
                             fromBlock: "earliest",
                             toBlock: "latest",
@@ -68,18 +68,18 @@ const YourAccount = () => {
                             ...config,
                             eventName: "WithdrawRequest",
                             args: {
-                                supplier: account?.address,
+                                supplier: userWalletAddress,
                             },
                             fromBlock: "earliest",
                             toBlock: "latest",
                         })
     
-            const sortedLogs = sortBy([...supplyLogs,...withdrawLogs],(log) => log.args.timestamp);
+            const sortedLogs = orderBy([...supplyLogs,...withdrawLogs], log => log.args.timestamp , "desc");
             setLogs(sortedLogs);
         }
-        
-        getLogs()
-      }, [account?.address])
+       
+        if(userWalletAddress) getLogs();
+      }, [userWalletAddress])
 
   return (
     <div className="w-full flex bg-gradient-to-tr from-gray-800 via-zinc-800 to-zinc-700 pb-10 md:pb-20 select-none lg:pt-32 pt-24 md:pt-28 min-h-[600px] z-10 relative">
@@ -105,21 +105,21 @@ const YourAccount = () => {
                 <div className="flex flex-col gap-4 rounded-2xl md:p-10 p-5 border-2 border-white/10 bg-white/5 *:flex *:items-center *:border-b-2 *:border-white/10 *:pb-4">
                     <div className='last:pb-0 last:border-b-0'>
                         <div className="grow md:text-lg text-base text-white/70">Staked Amount</div>
-                        <div className="grow-0 md:text-2xl text-xl text-white">{`${balanceAmount}`}</div>
+                        <div className="grow-0 md:text-2xl text-xl text-white">{`${BigNumber(balanceAmount).isNaN() ? `0.00` : balanceAmount.toFixed(2).toString()}`}</div>
                     </div>
                     <div className='last:pb-0 last:border-b-0'>
                         <div className="grow md:text-lg text-base text-white/70">Percentage of Pool</div>
-                        <div className="grow-0 md:text-2xl text-xl text-white">{percentageOwned.toFixed(2).toString()}</div>
+                        <div className="grow-0 md:text-2xl text-xl text-white">{BigNumber(percentageOwned).isNaN() ? `0.00` : percentageOwned.toFixed(2).toString()}</div>
                     </div>
                 </div>
                 <div className="flex flex-col gap-4 rounded-2xl md:p-10 p-5 border-2 border-white/10 bg-white/5 *:flex *:items-center *:border-b-2 *:border-white/10 *:pb-4">
                     <div className='last:pb-0 last:border-b-0'>
                         <div className="grow md:text-lg text-base text-white/70">PIONs in queue</div>
-                        <div className="grow-0 md:text-2xl text-xl text-white">{`${transferAmount}`}</div>
+                        <div className="grow-0 md:text-2xl text-xl text-white">{`${BigNumber(transferAmount).isNaN() ? `0.00` : transferAmount.toFixed(2).toString()}`}</div>
                     </div>
                     <div className='last:pb-0 last:border-b-0'>
                         <div className="grow md:text-lg text-base text-white/70">Total PION locked</div>
-                        <div className="grow-0 md:text-2xl text-xl text-white">{`${totalTokensSupplied}`}</div>
+                        <div className="grow-0 md:text-2xl text-xl text-white">{`${BigNumber(totalTokensSupplied).isNaN() ? `0.00` : totalTokensSupplied.toFixed(2).toString()}`}</div>
                     </div>
                 </div>
             </div>
@@ -146,7 +146,8 @@ const YourAccount = () => {
                                     <td className='bg-white/5 group-hover/history:bg-white/10 cursor-pointer duration-100 border-y-2 first:border-l-2 last:border-r-2 border-white/10 text-white/70 md:p-5 p-3 text-left first:rounded-l-xl last:rounded-r-xl'>
                                         <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className='size-4 group-[.invest]/history:inline text-red-400 hidden -mt-1 mr-1' xmlns="http://www.w3.org/2000/svg"><g id="Square_Minus"><g><path d="M18.438,20.938H5.564a2.5,2.5,0,0,1-2.5-2.5V5.564a2.5,2.5,0,0,1,2.5-2.5H18.438a2.5,2.5,0,0,1,2.5,2.5V18.438A2.5,2.5,0,0,1,18.438,20.938ZM5.564,4.064a1.5,1.5,0,0,0-1.5,1.5V18.438a1.5,1.5,0,0,0,1.5,1.5H18.438a1.5,1.5,0,0,0,1.5-1.5V5.564a1.5,1.5,0,0,0-1.5-1.5Z"></path><path d="M9,12.5a.5.5,0,0,1,0-1h6a.5.5,0,0,1,0,1Z"></path></g></g></svg>
                                         <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className='size-4 group-[.withdraw]/history:inline text-green-400 hidden -mt-1 mr-1' xmlns="http://www.w3.org/2000/svg"><g id="Square_Plus"><g><path d="M18.438,20.938H5.563a2.5,2.5,0,0,1-2.5-2.5V5.564a2.5,2.5,0,0,1,2.5-2.5H18.438a2.5,2.5,0,0,1,2.5,2.5V18.438A2.5,2.5,0,0,1,18.438,20.938ZM5.563,4.064a1.5,1.5,0,0,0-1.5,1.5V18.438a1.5,1.5,0,0,0,1.5,1.5H18.438a1.5,1.5,0,0,0,1.5-1.5V5.564a1.5,1.5,0,0,0-1.5-1.5Z"></path><path d="M15,12.5H12.5V15a.5.5,0,0,1-1,0V12.5H9a.5.5,0,0,1,0-1h2.5V9a.5.5,0,0,1,1,0v2.5H15A.5.5,0,0,1,15,12.5Z"></path></g></g></svg>
-                                        {log.args.pionTokens.toString()}</td>
+                                        {BigNumber(log.args.pionTokens).dividedBy(TOKEN_DECIMAL).toFixed(2).toString()}
+                                    </td>
                                 </tr>
                             ))
                             }
