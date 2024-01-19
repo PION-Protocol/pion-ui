@@ -5,7 +5,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { deserialize, useAccount, useContractReads } from 'wagmi';
-import liquidity_abi from "../../../contracts/liquidity_abi.json";
+import staking_contract_abi from "../../../contracts/staking_contract_abi.json";
 
 const YourAccount = () => {
     const TOKEN_DECIMAL = BigNumber(process.env.REACT_APP_TOKEN_DECIMAL);
@@ -18,10 +18,10 @@ const YourAccount = () => {
     const [logs, setLogs] = useState([]);
     
     const config = {
-        address: process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
-        abi: liquidity_abi
+        address: process.env.REACT_APP_STAKING_CONTRACT_ADDRESS,
+        abi: staking_contract_abi
     };
-    const { data: liquidityPool } = useContractReads({
+    const { data: stakingPool } = useContractReads({
         contracts: [{
             ...config,
             functionName: 'getAmountBySupplier',
@@ -34,12 +34,12 @@ const YourAccount = () => {
 
     useEffect(() => {
         if (userWalletAddress) {
-            if (liquidityPool) {
-                console.dir(liquidityPool, { depth: null });
-                const percentage = BigNumber(liquidityPool[0]?.result?.balanceAmount).div(liquidityPool[1]?.result).times(100);
-                const balanceAmount = BigNumber(liquidityPool[0]?.result?.balanceAmount).dividedBy(TOKEN_DECIMAL);
-                const totalTokensSupplied = BigNumber(liquidityPool[1]?.result).dividedBy(TOKEN_DECIMAL);
-                const transferAmount = BigNumber(liquidityPool[0]?.result?.transferAmount).dividedBy(TOKEN_DECIMAL);
+            if (stakingPool) {
+                console.dir(stakingPool, { depth: null });
+                const percentage = BigNumber(stakingPool[0]?.result?.balanceAmount).div(stakingPool[1]?.result).times(100);
+                const balanceAmount = BigNumber(stakingPool[0]?.result?.balanceAmount).dividedBy(TOKEN_DECIMAL);
+                const totalTokensSupplied = BigNumber(stakingPool[1]?.result).dividedBy(TOKEN_DECIMAL);
+                const transferAmount = BigNumber(stakingPool[0]?.result?.transferAmount).dividedBy(TOKEN_DECIMAL);
                 setBalanceAmount(balanceAmount);
                 setTransferAmount(transferAmount);
                 setPercentageOwned(percentage);
@@ -50,7 +50,7 @@ const YourAccount = () => {
             setTransferAmount(0);
             setPercentageOwned(0);
         }
-    }, [liquidityPool, userWalletAddress]);
+    }, [stakingPool, userWalletAddress]);
 
     useEffect(() => {
         async function getLogs() {

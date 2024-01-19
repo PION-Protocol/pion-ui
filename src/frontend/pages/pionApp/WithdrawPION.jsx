@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAccount, useContractWrite } from 'wagmi'
 import isEmpty from 'lodash.isempty';
-import abi from "../../../contracts/liquidity_abi.json"
+import abi from "../../../contracts/staking_contract_abi.json"
 import toast, { Toaster } from 'react-hot-toast';
 
 const WithdrawPION = () => {
@@ -16,7 +16,7 @@ const WithdrawPION = () => {
         isError: isWithdrawError,
         error: withdrawalError,
     } = useContractWrite({
-        address: process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
+        address: process.env.REACT_APP_STAKING_CONTRACT_ADDRESS,
         abi: abi,
         functionName: 'withdraw',
     });

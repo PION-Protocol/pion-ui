@@ -3,9 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useContractWrite } from 'wagmi';
 import isEmpty from 'lodash.isempty';
-import liquidity_abi from "../../../../contracts/liquidity_abi.json";
+import staking_contract_abi from "../../../../contracts/staking_contract_abi.json";
 import pionTokenAbi from "../../../../contracts/pion_token_abi.json";
 import toast, { Toaster } from 'react-hot-toast';
+
+// TODO: Move this to a constants files and load this value from there.
+const MAX_UINT256 = BigInt("115792089237316195423570985008687907853269984665640564039457584007913129639935");
 
 const StakePION = () => {
     const [stakedTokenValue, setStakedTokenValue] = useState(0);
@@ -31,8 +34,8 @@ const StakePION = () => {
         error: supplyError,
         write: supplyWrite
     } = useContractWrite({
-        address: process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
-        abi: liquidity_abi,
+        address: process.env.REACT_APP_STAKING_CONTRACT_ADDRESS,
+        abi: staking_contract_abi,
         functionName: 'supply',
     });
 
@@ -106,9 +109,9 @@ const StakePION = () => {
         }
         else {
             approvalWrite({
-                args: [process.env.REACT_APP_LIQUIDITY_CONTRACT_ADDRESS,
-                    BigInt(10000000000000000000000000000000000000)],
-                from: "0x8648d3351a06B03e039Cd0818379F1717BCDd6B2"
+                args: [process.env.REACT_APP_STAKING_CONTRACT_ADDRESS,
+                    MAX_UINT256],
+                from: walletAddress,
             });
         }
     }
