@@ -22,6 +22,7 @@ import WebLayout from "./frontend/components/webLayout/WebLayout";
 import Ecosystem from "./frontend/pages/ecosystem/Ecosystem";
 import WithdrawPION from "./frontend/pages/pionApp/WithdrawPION";
 import StakePION from "./frontend/pages/pionApp/stakePION/StakePION";
+import BuyPION from "./frontend/pages/pionApp/buyPION/BuyPION";
 import YourAccount from "./frontend/pages/yourAccount/YourAccount";
 
 function App() {
@@ -80,6 +81,7 @@ function App() {
               <Route path='/' element={<WebLayout Component={Home}/>} />
               <Route path='/ecosystem' element={<WebLayout Component={Ecosystem}/>} />
               <Route path='/launch' element={<AppLayout Component={StakePION}/>} />
+              <Route path='/buy' element={<AppLayout Component={BuyPION}/>} />
               <Route path='/account' element={<AppLayout Component={YourAccount}/>} />
               <Route path='/withdraw' element={<AppLayout Component={WithdrawPION}/>} />
             </Routes>
